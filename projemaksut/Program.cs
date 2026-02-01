@@ -19,6 +19,16 @@ Log.Logger = new LoggerConfiguration()
 // PORT for Render
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://besiktas-frontend.onrender.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 // DB connection
 var connectionString =
@@ -77,7 +87,8 @@ builder.Services.AddScoped<IMahalleService, MahalleService>();
 
 var app = builder.Build();
 
-app.UseCors("AllowAll");
+
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandler>();
