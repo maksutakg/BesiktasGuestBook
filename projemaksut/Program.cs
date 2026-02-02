@@ -114,4 +114,22 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<Persistence.Context.AppDbContext>();
+
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+            Console.WriteLine(">>> Veritabanı başarıyla güncellendi ve mahalle verileri eklendi.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($">>> Migration hatası: {ex.Message}");
+    }
+}
 app.Run();
