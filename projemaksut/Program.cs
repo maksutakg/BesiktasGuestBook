@@ -27,10 +27,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowRenderFrontend",
         policy =>
         {
-            policy.WithOrigins("https://besiktasgb.onrender.com", "https://netfrontend.onrender.com", "http://localhost:3000") 
+            policy.AllowAnyOrigin() 
                   .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
+                  .AllowAnyMethod();
         });
 });
 
