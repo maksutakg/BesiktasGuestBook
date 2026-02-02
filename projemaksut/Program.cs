@@ -34,10 +34,8 @@ builder.Services.AddCors(options =>
 
 
 // DB connection
-var connectionString =
-    Environment.GetEnvironmentVariable("MYSQL_CONNECTION") ??
-    builder.Configuration.GetConnectionString("MySqlConnection");
-
+var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONN")
+                      ?? builder.Configuration.GetConnectionString("Default");
 // Services
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
