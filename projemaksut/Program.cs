@@ -24,12 +24,13 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
+    options.AddPolicy("AllowRenderFrontend",
         policy =>
         {
-            policy.WithOrigins("https://besiktasgb.onrender.com") 
+            policy.WithOrigins("https://besiktasgb.onrender.com", "https://netfrontend.onrender.com", "http://localhost:3000") 
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -46,15 +47,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -101,8 +94,7 @@ builder.Services.AddScoped<IMahalleService, MahalleService>();
 var app = builder.Build();
 
 
-app.UseCors("AllowFrontend");
-app.UseCors("RenderCorsPolicy");
+app.UseCors("AllowRenderFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandler>();
