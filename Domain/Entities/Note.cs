@@ -11,7 +11,7 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public string text { get; set; }
-        public DateTime DateTime { get; set; } = DateTime.Now;
+        public DateTime DateTime { get; set; } = DateTime.UtcNow;
             
         public int UserId { get; set; }
 
