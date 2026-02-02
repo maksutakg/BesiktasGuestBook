@@ -1,8 +1,11 @@
 ﻿using Application.Service;
+using Domain.Entities;
 using Infrastructure.Mapper;
 using Infrastructure.Middlewares;
 using Infrastructure.PasswordHash;
 using Infrastructure.Token;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Context;
@@ -38,6 +41,7 @@ var connectionString =
 // Services
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<PasswordHasher<User>>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -54,19 +58,25 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString),
-        mysqlOptions => mysqlOptions.MigrationsAssembly("projemaksut")
-    ));
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
+});
+
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddAuthentication("Bearer")
-.AddJwtBearer("Bearer", options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
 {
-    var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+    var jwtSection = builder.Configuration.GetSection("Jwt");
+    var jwtOptions = jwtSection.Get<JwtOptions>();
+
+    var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+                 ?? jwtOptions.Key;
+
+    options.RequireHttpsMetadata = true;
+    options.SaveToken = true;
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -74,10 +84,14 @@ builder.Services.AddAuthentication("Bearer")
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+
         ValidIssuer = jwtOptions.Issuer,
         ValidAudience = jwtOptions.Audience,
+
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtOptions.Key))
+            Encoding.UTF8.GetBytes(jwtKey)),
+
+        ClockSkew = TimeSpan.Zero
     };
 });
 

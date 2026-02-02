@@ -2,18 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence.Context;
 
 #nullable disable
 
-namespace projemaksut.Migrations
+namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250804072422_Usermigration")]
-    partial class Usermigration
+    [Migration("20260202162525_PostgreInitial")]
+    partial class PostgreInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,25 +21,25 @@ namespace projemaksut.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Entities.Mahalle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Ilce")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -99,6 +99,90 @@ namespace projemaksut.Migrations
                             Id = 9,
                             Ilce = "Beşiktaş",
                             Name = "Gayrettepe"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Ilce = "Beşiktaş",
+                            Name = "Konaklar"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Ilce = "Beşiktaş",
+                            Name = "Kuruçeşme"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Ilce = "Beşiktaş",
+                            Name = "Kültür"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Ilce = "Beşiktaş",
+                            Name = "Levazım"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Ilce = "Beşiktaş",
+                            Name = "Levent"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Ilce = "Beşiktaş",
+                            Name = "Mecidiye"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Ilce = "Beşiktaş",
+                            Name = "Muradiye"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Ilce = "Beşiktaş",
+                            Name = "Nispetiye"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Ilce = "Beşiktaş",
+                            Name = "Ortaköy"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Ilce = "Beşiktaş",
+                            Name = "Sinanpaşa"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Ilce = "Beşiktaş",
+                            Name = "Türkali"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Ilce = "Beşiktaş",
+                            Name = "Ulus"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Ilce = "Beşiktaş",
+                            Name = "Vişnezade"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Ilce = "Beşiktaş",
+                            Name = "Yıldız"
                         });
                 });
 
@@ -106,22 +190,22 @@ namespace projemaksut.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MahalleId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("text")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -136,44 +220,47 @@ namespace projemaksut.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("HashPassword")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Mail")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("SurName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Mail")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
