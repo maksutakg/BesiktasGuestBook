@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Persistence.Context;
 using Serilog;
 using System.Text;
+using FluentValidation;
+using Infrastructure.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,7 @@ var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONN")
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<PasswordHasher<User>>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
