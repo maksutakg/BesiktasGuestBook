@@ -89,6 +89,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IMahalleService, MahalleService>();
+builder.Services.AddTransient<GlobalExceptionHandler>();
 
 var app = builder.Build();
 
