@@ -1,118 +1,118 @@
 # 🏙️ Beşiktaş Guest Book API
 
-Beşiktaş ilçesinin mahallelerine yönelik bir ziyaretçi defteri REST API'si. Kullanıcılar kayıt olup giriş yaparak Beşiktaş'ın farklı mahallelerine not/mesaj ekleyebilir, düzenleyebilir ve arayabilirler.
+A REST API guest book for the neighbourhoods of the Beşiktaş district. Users can register, log in, and then create, edit, and search notes tied to any neighbourhood in Beşiktaş.
 
 ---
 
-## 🚀 Teknolojiler
+## 🚀 Tech Stack
 
-| Teknoloji | Kullanım |
+| Technology | Purpose |
 |---|---|
 | **ASP.NET Core 8** | Web API framework |
 | **Entity Framework Core** | ORM |
-| **PostgreSQL** | Veritabanı (Npgsql sürücüsü) |
-| **JWT Bearer** | Kimlik doğrulama |
-| **AutoMapper** | Nesne eşleme |
-| **FluentValidation** | Girdi doğrulama |
-| **Serilog** | Loglama |
-| **Swagger / OpenAPI** | API dokümantasyonu (geliştirme ortamı) |
-| **Docker** | Konteynerizasyon |
+| **PostgreSQL** | Database (Npgsql driver) |
+| **JWT Bearer** | Authentication |
+| **AutoMapper** | Object mapping |
+| **FluentValidation** | Input validation |
+| **Serilog** | Logging |
+| **Swagger / OpenAPI** | API documentation (development) |
+| **Docker** | Containerisation |
 
 ---
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
-Çözüm **Clean Architecture** prensiplerine göre 5 katmana ayrılmıştır:
+The solution follows **Clean Architecture** and is split into 5 layers:
 
 ```
 BesiktasGuestBook/
-├── Domain/               # Temel iş modelleri ve entity'ler
-│   ├── Entities/         # User, Note, Mahalle (+ DTO'lar)
-│   ├── Common/           # EntityBase (ortak alanlar)
-│   └── Request/          # API istek modelleri
+├── Domain/               # Core business models and entities
+│   ├── Entities/         # User, Note, Mahalle (+ DTOs)
+│   ├── Common/           # EntityBase (shared fields)
+│   └── Request/          # API request models
 │
-├── Application/          # İş mantığı servisleri
-│   └── Service/          # IUserService, INoteService, IMahalleService + uygulamaları
+├── Application/          # Business logic services
+│   └── Service/          # IUserService, INoteService, IMahalleService + implementations
 │
-├── Infrustructure/       # Yatay kesim kaygıları
-│   ├── Token/            # JWT üretimi (TokenService, JwtOptions)
-│   ├── PasswordHash/     # Şifre hashleme
-│   ├── Mapper/           # AutoMapper profilleri
-│   ├── Validators/       # FluentValidation doğrulayıcıları
+├── Infrustructure/       # Cross-cutting concerns
+│   ├── Token/            # JWT generation (TokenService, JwtOptions)
+│   ├── PasswordHash/     # Password hashing
+│   ├── Mapper/           # AutoMapper profiles
+│   ├── Validators/       # FluentValidation validators
 │   ├── Middlewares/      # GlobalExceptionHandler
-│   └── Exception/        # Özel exception tipleri
+│   └── Exception/        # Custom exception types
 │
-├── Persistence/          # Veri erişim katmanı
+├── Persistence/          # Data access layer
 │   ├── Context/          # AppDbContext (EF Core)
-│   └── Migrations/       # EF Core migration dosyaları
+│   └── Migrations/       # EF Core migration files
 │
-└── projemaksut/          # Web API giriş noktası
+└── projemaksut/          # Web API entry point
     ├── Controller/       # AuthController, UserController, NoteController, MahalleController
-    ├── Program.cs        # DI kaydı, middleware, otomatik migration
-    └── appsettings.json  # Uygulama yapılandırması
+    ├── Program.cs        # DI registration, middleware, auto-migration
+    └── appsettings.json  # Application configuration
 ```
 
 ---
 
-## 🔑 API Endpoint'leri
+## 🔑 API Endpoints
 
 ### Auth
-| Method | Endpoint | Açıklama | Yetki |
-|--------|----------|----------|-------|
-| POST | `/api/Auth/Login` | Giriş yap, JWT token al | Herkese açık |
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/Auth/Login` | Log in and receive a JWT token | Public |
 
 ### User
-| Method | Endpoint | Açıklama | Yetki |
-|--------|----------|----------|-------|
-| POST | `/api/User/Register` | Yeni kullanıcı kaydı | Herkese açık |
-| GET | `/api/User/users` | Tüm kullanıcıları listele | JWT |
-| GET | `/api/User/active/users` | Aktif kullanıcıları listele | JWT |
-| GET | `/api/User/filtre` | Kullanıcıları filtrele (id, name, surname, email) | JWT |
-| PUT | `/api/User/update` | Kendi profilini güncelle | JWT |
-| DELETE | `/api/User/delete/{id}` | Kullanıcıyı soft delete yap | JWT |
-| GET | `/api/User/adminUsers` | Tüm kullanıcı detayları | JWT (Admin) |
-| DELETE | `/api/User/adminHardDelete/{id}` | Kullanıcıyı kalıcı sil | JWT (Admin) |
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/User/Register` | Register a new user | Public |
+| GET | `/api/User/users` | List all users | JWT |
+| GET | `/api/User/active/users` | List active users | JWT |
+| GET | `/api/User/filtre` | Filter users (id, name, surname, email) | JWT |
+| PUT | `/api/User/update` | Update own profile | JWT |
+| DELETE | `/api/User/delete/{id}` | Soft-delete a user | JWT |
+| GET | `/api/User/adminUsers` | Full user details | JWT (Admin) |
+| DELETE | `/api/User/adminHardDelete/{id}` | Permanently delete a user | JWT (Admin) |
 
 ### Note
-| Method | Endpoint | Açıklama | Yetki |
-|--------|----------|----------|-------|
-| POST | `/api/Note/CreateNote` | Not oluştur | JWT |
-| GET | `/api/Note/GetUserNotesById` | Kullanıcıya ait notları getir | JWT |
-| PUT | `/api/Note/UpdateNote` | Not güncelle (sadece kendi notun) | JWT |
-| DELETE | `/api/Note/DeleteNote` | Not sil | JWT |
-| GET | `/api/Note/FiltreNot` | Notları metin ile filtrele | JWT |
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/Note/CreateNote` | Create a note | JWT |
+| GET | `/api/Note/GetUserNotesById` | Get notes for a user | JWT |
+| PUT | `/api/Note/UpdateNote` | Update a note (own notes only) | JWT |
+| DELETE | `/api/Note/DeleteNote` | Delete a note | JWT |
+| GET | `/api/Note/FiltreNot` | Filter notes by text | JWT |
 
-### Mahalle
-| Method | Endpoint | Açıklama | Yetki |
-|--------|----------|----------|-------|
-| GET | `/api/Mahalle/AllMahalles` | Tüm mahalleleri listele | Herkese açık |
-| GET | `/api/Mahalle/FiltreMahalle` | Mahalle adına göre filtrele | Herkese açık |
+### Mahalle (Neighbourhood)
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/Mahalle/AllMahalles` | List all neighbourhoods | Public |
+| GET | `/api/Mahalle/FiltreMahalle` | Filter by neighbourhood name | Public |
 
 ---
 
-## ⚙️ Kurulum ve Çalıştırma
+## ⚙️ Getting Started
 
-### Gereksinimler
+### Prerequisites
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [PostgreSQL](https://www.postgresql.org/)
 
-### 1. Repoyu klonla
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/maksutakg/BesiktasGuestBook.git
 cd BesiktasGuestBook
 ```
 
-### 2. Yapılandırmayı ayarla
+### 2. Configure the application
 
-`projemaksut/appsettings.json` dosyasını düzenle veya aşağıdaki ortam değişkenlerini tanımla:
+Edit `projemaksut/appsettings.json` or set the following environment variables:
 
 ```bash
-POSTGRES_CONN="Host=localhost;Username=postgres;Password=sifre;Database=guestbookdotnet"
-JWT_KEY="gizli-anahtar-buraya"
+POSTGRES_CONN="Host=localhost;Username=postgres;Password=yourpassword;Database=guestbookdotnet"
+JWT_KEY="your-secret-key"
 ```
 
-### 3. Bağımlılıkları yükle ve çalıştır
+### 3. Restore dependencies and run
 
 ```bash
 dotnet restore
@@ -120,65 +120,65 @@ cd projemaksut
 dotnet run
 ```
 
-> Uygulama başlarken bekleyen EF Core migration'ları ve mahalle seed verisi otomatik olarak uygulanır.
+> Pending EF Core migrations and neighbourhood seed data are applied automatically on startup.
 
 ### 4. Swagger UI
 
-Geliştirme ortamında aşağıdaki adresten API'yi test edebilirsiniz:
+In development mode, explore and test the API at:
 ```
 http://localhost:8080/swagger
 ```
 
 ---
 
-## 🐳 Docker ile Çalıştırma
+## 🐳 Running with Docker
 
 ```bash
 docker build -t besiktas-guestbook .
 docker run -p 8080:8080 \
-  -e POSTGRES_CONN="Host=host.docker.internal;Username=postgres;Password=sifre;Database=guestbookdotnet" \
-  -e JWT_KEY="gizli-anahtar-buraya" \
+  -e POSTGRES_CONN="Host=host.docker.internal;Username=postgres;Password=yourpassword;Database=guestbookdotnet" \
+  -e JWT_KEY="your-secret-key" \
   besiktas-guestbook
 ```
 
 ---
 
-## 🌍 Ortam Değişkenleri
+## 🌍 Environment Variables
 
-| Değişken | Açıklama | Varsayılan |
+| Variable | Description | Default |
 |---|---|---|
-| `POSTGRES_CONN` | PostgreSQL bağlantı dizisi | `appsettings.json` içindeki değer |
-| `JWT_KEY` | JWT imzalama anahtarı | `appsettings.json` içindeki değer |
-| `PORT` | Dinlenecek port | `8080` |
+| `POSTGRES_CONN` | PostgreSQL connection string | Value in `appsettings.json` |
+| `JWT_KEY` | JWT signing key | Value in `appsettings.json` |
+| `PORT` | Listening port | `8080` |
 
 ---
 
-## 🗺️ Veri Modeli
+## 🗺️ Data Model
 
 ```
 User ─── (1:N) ──► Note ◄── (N:1) ─── Mahalle
 ```
 
-- **User**: Ad, soyad, e-posta (unique), hashlenmiş şifre
-- **Note**: Metin, tarih/saat, kullanıcı ve mahalle ilişkileri
-- **Mahalle**: Beşiktaş'taki 23 mahalle (seed verisi olarak yüklenir)
+- **User**: First name, last name, email (unique), hashed password
+- **Note**: Text content, timestamp, relations to user and neighbourhood
+- **Mahalle**: 23 neighbourhoods in Beşiktaş (loaded as seed data)
 
-### Seed Mahalleler
+### Seeded Neighbourhoods
 Abbasağa, Akat, Arnavutköy, Balmumcu, Bebek, Cihannüma, Dikilitaş, Etiler, Gayrettepe, Konaklar, Kuruçeşme, Kültür, Levazım, Levent, Mecidiye, Muradiye, Nispetiye, Ortaköy, Sinanpaşa, Türkali, Ulus, Vişnezade, Yıldız
 
 ---
 
-## 🔐 Kimlik Doğrulama
+## 🔐 Authentication
 
-API, **JWT Bearer Token** kullanmaktadır.
+The API uses **JWT Bearer Token** authentication.
 
-1. `/api/Auth/Login` endpoint'ine mail ve şifre ile istek gönder
-2. Dönen token'ı `Authorization: Bearer <token>` header'ı ile diğer isteklerde kullan
+1. Send a request with your email and password to `/api/Auth/Login`
+2. Use the returned token in the `Authorization: Bearer <token>` header for all protected requests
 
-Token geçerlilik süresi: **99 dakika**
+Token validity: **99 minutes**
 
 ---
 
-## 📄 Lisans
+## 📄 License
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+This project is licensed under the MIT License.
